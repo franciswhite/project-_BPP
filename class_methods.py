@@ -88,56 +88,53 @@ class LinearRegression(object):
         :param: array: data with respect to which cost function should be minimized
         :returns: Array containing local minima for arguments.
         '''
-        #Initialize total error
-        total_error = 0
-
+        #Initialize errors sums
+        error_sum_0 = 0
+        error_sum_1 = 0
         #Initialize arguments as 0
         coefficient0 = 0
         coefficient1 = 0
 
         #Initialize learning rate: YET TO TEST WHAT'S BEST
-        alpha = 0.001
+        alpha = 0.00001
 
         #Initialize update variables
-        temp0 = 10000000000000
-        temp1 = 10000000000000
-
-        #Initialize output variable
+        temp0 = 10000
+        temp1 = 10000
 
         #Convergence margin
-        epsilon = 0.5
-        x=0
-        while True:
-            for row in range(0, number_observations-1): #This loops calculates sum of squared errors for parameters in iteration
-                single_observation_error = ((coefficient0 + coefficient1 * array[row][0]) - array[row][1])**2
-                total_error += single_observation_error
-
-                for row in range(0, number_observations-1): #This loops calculates the updates and performs them
-                    temp0 = coefficient0 - alpha * (1/number_observations) * total_error
-                    temp1 = coefficient1 - alpha * (1/number_observations) * total_error * array[row][0]
-
-                    if abs(coefficient0 - temp0) > epsilon and abs(coefficient1 - temp1) > epsilon: #Convergence condition
-                        coefficients = np.array([coefficient0, coefficient1]) #Assemble array
-                        break #Stop the while loop
-                    else:
-                        coefficient0 = temp0 #Update coefficients
-                        coefficient1 = temp1
-                        total_error = 0 #Resets total_error before next iteration
-            print(x)
-            print(coefficient0)
-            print(coefficient1)
-            x+=1
+        epsilon = 0.00000001
+        stop = "run" #
+        x = 1 #DEBUGGING
+        while stop != "Break the while loop.":
+            for row in range(0, number_observations): #Loop computes possible update of coefficient0
+                single_observation_error = ((coefficient0 + coefficient1 * array[row][0]) - array[row][1])
+                error_sum_0 += single_observation_error
+            for row in range(0, number_observations): #This loop computes possible update coefficient1
+                single_observation_error_times_observation = ((coefficient0 + coefficient1 * array[row][0]) - array[row][1])*array[row][0]
+                error_sum_1 += single_observation_error_times_observation
+            temp0 = coefficient0 - alpha * (1/number_observations) * error_sum_0
+            temp1 = coefficient1 - alpha * (1/number_observations) * error_sum_1
+            if abs(coefficient0 - temp0) < epsilon and abs(coefficient1 - temp1) < epsilon: #Convergence condition
+                coefficient0 = temp0
+                coefficient1 = temp1
+                coefficients = np.array([coefficient0, coefficient1]) #Assemble array
+                stop = "Break the while loop." #Stop the while loop
+            else: #If convergence not yet reached
+                coefficient0 = temp0 #Update coefficients
+                coefficient1 = temp1
+                error_sum_0 = 0 #Resets total_errors before next iteration
+                error_sum_1 = 0
         return coefficients
 
 
 
 scaffold = LinearRegression() #Initialize LinearRegression object with desired number of regressors
 
-a = LinearRegression.prepare_data("housing.data", scaffold)
+a = LinearRegression.prepare_data("toy_data.py", scaffold)
 
-b = LinearRegression.cost_function(a, 0, 1.5)
+b = LinearRegression.cost_function(a, 0, 1)
 
 okay = LinearRegression.minimize(a)
-
 print(okay)
 
