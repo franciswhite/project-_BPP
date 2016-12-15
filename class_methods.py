@@ -63,7 +63,7 @@ class LinearRegression(object):
         # print(datapoints)
 
     def cost_function(array,intersect, slope):
-        '''Computes the sum of error squares for a hypothesis and a set of observations.
+        '''Computes the average sum of error square for a hypothesis and a set of observations.
 
         :param array: Observation pairs (arrays) from data.
         :param intersect: The intersection of the regression line with the y-axis.
@@ -78,12 +78,61 @@ class LinearRegression(object):
             single_observation_error = ((intersect + slope * array[row][0]) - array[row][1])**2
             total_error += single_observation_error
 
+        #Cost function as suggested by Andrew Ng
         cost = 1/(2*number_observations)*total_error
         return cost
+
+    def minimize(array):
+        '''Minimizes cost function using gradient descent.
+
+        :param: array: data with respect to which cost function should be minimized
+        :returns: Array containing local minima for arguments.
+        '''
+        #Initialize total error
+        total_error = 0
+
+        #Initialize arguments as 0
+        coefficient0 = 0
+        coefficient1 = 0
+
+        #Initialize learning rate: YET TO TEST WHAT'S BEST
+        alpha = 0.1
+
+        #Initialize update variables
+        temp0 = 10000000000000
+        temp1 = 10000000000000
+
+        #Convergence margin
+        epsilon = 0.00000001
+
+        while True:
+            for row in range(0, number_observations-1): #This loops calculates sum of squared errors for parameters in iteration
+                single_observation_error = ((coefficient0 + coefficient1 * array[row][0]) - array[row][1])**2
+                total_error += single_observation_error
+
+            for row in range(0, number_observations-1): #This loops calculates the updates and performs them
+                temp0 = coefficient0 - alpha * (1/number_observations) * total_error
+                temp1 = coefficient1 - alpha * (1/number_observations) * total_error * array[row][0]
+
+                if abs(coefficient0 - temp0) > epsilon and abs(coefficient1 - temp1) > epsilon: #Convergence condition
+                    coefficients = np.array([coefficient0, coefficient1]) #Assemble array
+                    break #Stop the while loop
+                else:
+                    coefficient0 = temp0 #Update coefficients
+                    coefficient1 = temp1
+                    total_error = 0 #Resets total_error before next iteration
+
+        return coefficients
+
+
 
 scaffold = LinearRegression() #Initialize LinearRegression object with desired number of regressors
 
 a = LinearRegression.prepare_data("housing.data", scaffold)
 
-print(LinearRegression.cost_function(a, 0, 1.5))
-print(a)
+b = LinearRegression.cost_function(a, 0, 1.5)
+
+okay = LinearRegression.minimize(a)
+
+print(okay)
+
