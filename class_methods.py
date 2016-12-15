@@ -96,32 +96,37 @@ class LinearRegression(object):
         coefficient1 = 0
 
         #Initialize learning rate: YET TO TEST WHAT'S BEST
-        alpha = 0.1
+        alpha = 0.001
 
         #Initialize update variables
         temp0 = 10000000000000
         temp1 = 10000000000000
 
-        #Convergence margin
-        epsilon = 0.00000001
+        #Initialize output variable
 
+        #Convergence margin
+        epsilon = 0.5
+        x=0
         while True:
             for row in range(0, number_observations-1): #This loops calculates sum of squared errors for parameters in iteration
                 single_observation_error = ((coefficient0 + coefficient1 * array[row][0]) - array[row][1])**2
                 total_error += single_observation_error
 
-            for row in range(0, number_observations-1): #This loops calculates the updates and performs them
-                temp0 = coefficient0 - alpha * (1/number_observations) * total_error
-                temp1 = coefficient1 - alpha * (1/number_observations) * total_error * array[row][0]
+                for row in range(0, number_observations-1): #This loops calculates the updates and performs them
+                    temp0 = coefficient0 - alpha * (1/number_observations) * total_error
+                    temp1 = coefficient1 - alpha * (1/number_observations) * total_error * array[row][0]
 
-                if abs(coefficient0 - temp0) > epsilon and abs(coefficient1 - temp1) > epsilon: #Convergence condition
-                    coefficients = np.array([coefficient0, coefficient1]) #Assemble array
-                    break #Stop the while loop
-                else:
-                    coefficient0 = temp0 #Update coefficients
-                    coefficient1 = temp1
-                    total_error = 0 #Resets total_error before next iteration
-
+                    if abs(coefficient0 - temp0) > epsilon and abs(coefficient1 - temp1) > epsilon: #Convergence condition
+                        coefficients = np.array([coefficient0, coefficient1]) #Assemble array
+                        break #Stop the while loop
+                    else:
+                        coefficient0 = temp0 #Update coefficients
+                        coefficient1 = temp1
+                        total_error = 0 #Resets total_error before next iteration
+            print(x)
+            print(coefficient0)
+            print(coefficient1)
+            x+=1
         return coefficients
 
 
